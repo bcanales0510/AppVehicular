@@ -2,6 +2,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <!-- Permisos necesarios -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -18,16 +23,18 @@
             android:value="AIzaSyAKhHWShwcQfe9TVdH1TRB0qenmKbsgenU"/>
 
         <activity
-            android:name=".uiapp.MainActivity"
+            android:name=".uiapp.LoginActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppVehicular">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <activity android:name=".uiapp.RegisterActivity" />
+        <activity android:name=".uiapp.MainActivity" />
         <activity android:name=".uiapp.AlertasActivity" />
         <activity android:name=".uiapp.MantenimientosActivity" />
         <activity android:name=".uiapp.HistorialActivity" />

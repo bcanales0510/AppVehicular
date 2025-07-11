@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Descripción del mantenimiento:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/edtDescripcionMantenimiento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ej: Cambio de aceite, Rotación de llantas..."
+        android:inputType="text"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Kilometraje actual:"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <EditText
+        android:id="@+id/edtKilometrajeMantenimiento"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ej: 50000"
+        android:inputType="number"
+        android:padding="12dp"
+        android:background="@android:drawable/editbox_background"/>
+
+</LinearLayout> 

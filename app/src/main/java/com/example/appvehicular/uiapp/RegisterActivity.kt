@@ -6,16 +6,20 @@ import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.appvehicular.R
 import com.example.appvehicular.DATA.BDHelper
+import com.example.appvehicular.R
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var edtUsuario: EditText
     private lateinit var edtClave: EditText
     private lateinit var edtPlaca: EditText
+    private lateinit var edtMarca: EditText
+    private lateinit var edtModelo: EditText
+    private lateinit var edtAnio: EditText
     private lateinit var btnRegistrar: Button
 
     private lateinit var dbHelper: BDHelper
@@ -25,80 +29,63 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_register)
 
-        // Referencias de vista
         edtUsuario = findViewById(R.id.edtUsuario)
         edtClave = findViewById(R.id.edtClave)
         edtPlaca = findViewById(R.id.edtPlaca)
+        edtMarca = findViewById(R.id.edtMarca)
+        edtModelo = findViewById(R.id.edtModelo)
+
         btnRegistrar = findViewById(R.id.btnRegistrar)
 
         dbHelper = BDHelper(this)
         db = dbHelper.writableDatabase
 
         btnRegistrar.setOnClickListener {
-            val usuario = edtUsuario.text.toString().trim()
-            val clave = edtClave.text.toString().trim()
-            val placa = edtPlaca.text.toString().trim().uppercase()
-
-            if (usuario.isEmpty() || clave.isEmpty() || placa.isEmpty()) {
-                Toast.makeText(this, "Por favor completa todos los campos", Toast.LENGTH_SHORT).show()
-            } else {
-                registrarUsuario(usuario, clave, placa)
-            }
+            registrarUsuario()
         }
     }
 
-    private fun registrarUsuario(usuario: String, clave: String, placa: String) {
-        try {
-            // 1. Verificar si el vehículo ya existe
-            val cursorVehiculo = db.rawQuery("SELECT id FROM vehiculos WHERE placa = ?", arrayOf(placa))
-            var idVehiculo: Int? = null
+    private fun registrarUsuario() {
+        val usuario = edtUsuario.text.toString().trim()
+        val clave = edtClave.text.toString().trim()
+        val placa = edtPlaca.text.toString().trim()
+        val marca = edtMarca.text.toString().trim()
+        val modelo = edtModelo.text.toString().trim()
 
-            if (cursorVehiculo.moveToFirst()) {
-                idVehiculo = cursorVehiculo.getInt(0)
-            } else {
-                // Insertar nuevo vehículo
-                val valuesVehiculo = ContentValues().apply {
-                    put("placa", placa)
-                }
-                val newRowId = db.insert("vehiculos", null, valuesVehiculo)
-                if (newRowId != -1L) {
-                    idVehiculo = newRowId.toInt()
-                }
-            }
-            cursorVehiculo.close()
 
-            if (idVehiculo != null) {
-                // Verificar si usuario ya existe
-                val cursorUsuario = db.rawQuery("SELECT id FROM usuarios WHERE usuario = ?", arrayOf(usuario))
-                if (cursorUsuario.moveToFirst()) {
-                    Toast.makeText(this, "El usuario ya existe", Toast.LENGTH_SHORT).show()
-                    cursorUsuario.close()
-                    return
-                }
-                cursorUsuario.close()
+        if (usuario.isEmpty() || clave.isEmpty() || placa.isEmpty() || marca.isEmpty() || modelo.isEmpty() ) {
+            Toast.makeText(this, "Completa todos los campos correctamente", Toast.LENGTH_SHORT).show()
+            return
+        }
 
-                // Insertar usuario
-                val valuesUsuario = ContentValues().apply {
-                    put("usuario", usuario)
-                    put("clave", clave)
-                    put("id_vehiculo", idVehiculo)
-                }
+        val valuesVehiculo = ContentValues().apply {
+            put("placa", placa)
+            put("marca", marca)
+            put("modelo", modelo)
 
-                val result = db.insert("usuarios", null, valuesUsuario)
+        }
 
-                if (result != -1L) {
-                    Toast.makeText(this, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, LoginActivity::class.java))
-                    finish()
-                } else {
-                    Toast.makeText(this, "Error al registrar usuario", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                Toast.makeText(this, "Error al registrar vehículo", Toast.LENGTH_SHORT).show()
-            }
+        val vehiculoId = db.insert("vehiculos", null, valuesVehiculo)
 
-        } catch (e: Exception) {
-            Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+        if (vehiculoId == -1L) {
+            Toast.makeText(this, "Error al registrar vehículo. ¿Placa duplicada?", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        val valuesUsuario = ContentValues().apply {
+            put("usuario", usuario)
+            put("clave", clave)
+            put("id_vehiculo", vehiculoId.toInt())
+        }
+
+        val usuarioId = db.insert("usuarios", null, valuesUsuario)
+
+        if (usuarioId != -1L) {
+            Toast.makeText(this, "Registro exitoso. Inicia sesión.", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+        } else {
+            Toast.makeText(this, "Error al registrar usuario.", Toast.LENGTH_SHORT).show()
         }
     }
 }

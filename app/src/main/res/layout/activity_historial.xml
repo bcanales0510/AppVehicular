@@ -1,6 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:background="#FFFFFF">
 
-</androidx.constraintlayout.widget.LinearLayout>
+    <TextView
+        android:id="@+id/txtTituloHistorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Historial de Ubicaciones"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="#2196F3"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Toca una ubicación para ver más detalles"
+        android:textSize="14sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="16dp"/>
+
+    <ListView
+        android:id="@+id/listViewHistorial"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="#E0E0E0"
+        android:dividerHeight="1dp"
+        android:padding="8dp"/>
+
+</LinearLayout>

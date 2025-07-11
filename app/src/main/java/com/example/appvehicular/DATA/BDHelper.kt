@@ -18,8 +18,7 @@ class BDHelper (context: Context):SQLiteOpenHelper (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             placa TEXT NOT NULL UNIQUE,
             marca TEXT,
-            modelo TEXT,
-            anio INTEGER
+            modelo TEXT
         );
         """
         )

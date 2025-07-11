@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.drawerlayout.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
@@ -14,10 +15,12 @@
         android:layout_height="match_parent">
 
         <!-- MAPA -->
-        <FrameLayout
-            android:id="@+id/map_container"
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
             android:layout_width="match_parent"
-            android:layout_height="250dp"/>
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
 
         <!-- INFO VEHÍCULO -->
         <LinearLayout
@@ -25,60 +28,46 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="16dp"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:background="#F5F5F5">
 
             <ImageView
                 android:id="@+id/imgVehiculo"
-                android:layout_width="120dp"
-                android:layout_height="80dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:src="@drawable/ic_car_default"
                 android:scaleType="centerCrop"
                 android:layout_marginEnd="16dp"/>
 
-            <TextView
-                android:id="@+id/txtVehiculoInfo"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Vehículo: --"
-                android:textSize="16sp"
-                android:textStyle="bold"/>
-        </LinearLayout>
+                android:layout_weight="1"
+                android:orientation="vertical">
 
-        <!-- BOTONES -->
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
+                <TextView
+                    android:id="@+id/txtVehiculoInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Vehículo: --"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/black"/>
 
-            <Button
-                android:id="@+id/btnAlertas"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ver Alertas"/>
+                <TextView
+                    android:id="@+id/txtEstadoVehiculo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Estado: En movimiento"
+                    android:textSize="14sp"
+                    android:textColor="#4CAF50"/>
+            </LinearLayout>
 
-            <Button
-                android:id="@+id/btnMantenimientos"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ver Mantenimientos"
-                android:layout_marginTop="8dp"/>
-
-            <Button
-                android:id="@+id/btnHistorial"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Ver Historial"
-                android:layout_marginTop="8dp"/>
-        </LinearLayout>
     </LinearLayout>
 
-    <!-- MENÚ LATERAL -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        app:menu="@menu/drawer_menu"
-        app:headerLayout="@layout/nav_header"/>
+    </LinearLayout> <!-- cierre del LinearLayout interior -->
+
+
+
+
 </androidx.drawerlayout.widget.DrawerLayout>
