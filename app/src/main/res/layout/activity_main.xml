@@ -8,66 +8,83 @@
     android:layout_height="match_parent"
     tools:context=".uiapp.MainActivity">
 
-    <!-- CONTENIDO PRINCIPAL -->
-    <LinearLayout
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!-- MAPA -->
-        <fragment
-            android:id="@+id/map"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-
-        <!-- INFO VEHÍCULO -->
         <LinearLayout
+            android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:padding="16dp"
-            android:gravity="center_vertical"
-            android:background="#F5F5F5">
+            android:gravity="center_horizontal">
 
-            <ImageView
-                android:id="@+id/imgVehiculo"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:src="@drawable/ic_car_default"
-                android:scaleType="centerCrop"
-                android:layout_marginEnd="16dp"/>
+            <!-- CARDVIEW DEL MAPA -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp">
 
-            <LinearLayout
-                android:layout_width="0dp"
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+            </androidx.cardview.widget.CardView>
+
+            <!-- CARDVIEW INFORMACIÓN VEHÍCULO -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp">
 
-                <TextView
-                    android:id="@+id/txtVehiculoInfo"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Vehículo: --"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/black"/>
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
 
-                <TextView
-                    android:id="@+id/txtEstadoVehiculo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Estado: En movimiento"
-                    android:textSize="14sp"
-                    android:textColor="#4CAF50"/>
-            </LinearLayout>
+                    <ImageView
+                        android:id="@+id/imgVehiculo"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@drawable/ic_car_default"
+                        android:scaleType="centerCrop"
+                        android:layout_marginEnd="16dp"/>
 
-    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
 
-    </LinearLayout> <!-- cierre del LinearLayout interior -->
+                        <TextView
+                            android:id="@+id/txtVehiculoInfo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Vehículo: --"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"/>
 
+                        <TextView
+                            android:id="@+id/txtEstadoVehiculo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Estado: En movimiento"
+                            android:textSize="14sp"
+                            android:textColor="#4CAF50"/>
+                    </LinearLayout>
 
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
+        </LinearLayout>
+    </ScrollView>
 
 </androidx.drawerlayout.widget.DrawerLayout>
