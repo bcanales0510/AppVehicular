@@ -69,9 +69,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             .findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
 
-        // Configurar menú lateral
+
 
         configurarVistas()
+
+        // Configurar menú lateral
+        configurarToolbar()
 
         // Cargar información del vehículo
         cargarInformacionVehiculo()
@@ -83,8 +86,48 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun configurarVistas() {
         txtVehiculoInfo = findViewById(R.id.txtVehiculoInfo)
         txtEstadoVehiculo = findViewById(R.id.txtEstadoVehiculo)
+        drawerLayout = findViewById(R.id.drawer_layout)
+        navView = findViewById(R.id.nav_view)
+
 
     }
+    private fun configurarMenuLateral() {
+        val toggle = ActionBarDrawerToggle(
+            this,
+            drawerLayout,
+            R.string.open_drawer,
+            R.string.close_drawer
+        )
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        navView.setNavigationItemSelectedListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.nav_inicio -> startActivity(Intent(this, MainActivity::class.java))
+                R.id.nav_alertas -> startActivity(Intent(this, AlertasActivity::class.java))
+                R.id.nav_mantenimiento -> startActivity(Intent(this, MantenimientosActivity::class.java))
+                R.id.nav_historial -> startActivity(Intent(this, HistorialActivity::class.java))
+            }
+            drawerLayout.closeDrawers()
+            true
+        }
+    }
+
+    private fun setupBotonesNavegacion() {
+        btnAlertas.setOnClickListener {
+            startActivity(Intent(this, AlertasActivity::class.java))
+        }
+
+        btnMantenimientos.setOnClickListener {
+            startActivity(Intent(this, MantenimientosActivity::class.java))
+        }
+
+        btnHistorial.setOnClickListener {
+            startActivity(Intent(this, HistorialActivity::class.java))
+        }
+    }
+
 
     private fun cargarInformacionVehiculo() {
         if (idVehiculo > 0) {
@@ -196,4 +239,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun mostrarMensaje(mensaje: String) {
         android.widget.Toast.makeText(this, mensaje, android.widget.Toast.LENGTH_SHORT).show()
     }
+    private fun configurarToolbar() {
+        val toolbar = findViewById<androidx.appcompat.widget.Toolbar>(R.id.toolbar)
+        setSupportActionBar(toolbar)
+
+        val toggle = ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open_drawer, R.string.close_drawer)
+        drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+    }
+
+
 }

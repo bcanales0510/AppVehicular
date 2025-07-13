@@ -1,28 +1,21 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- drawer_menu.xml -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-    <group android:checkableBehavior="single">
-
-        <item
-            android:id="@+id/nav_alertas"
-            android:title="📢 Ver Alertas"
-            />
-
-        <item
-            android:id="@+id/nav_mantenimientos"
-            android:title="🛠 Ver Mantenimientos"
-             />
-
-        <item
-            android:id="@+id/nav_historial"
-            android:title="📜 Ver Historial"
-             />
-
-    </group>
-
     <item
-        android:id="@+id/nav_logout"
-        android:title="🚪 Cerrar sesión"
-         />
-
+        android:id="@+id/nav_inicio"
+        android:title="Inicio"/>
+    <item
+        android:id="@+id/nav_alertas"
+        android:title="Alertas"/>
+    <item
+        android:id="@+id/nav_mantenimiento"
+        android:title="Mantenimiento"/>
+    <item
+        android:id="@+id/nav_historial"
+        android:title="Historial"/>
+    <item
+        android:id="@+id/nav_perfil"
+        android:title="Mi Perfil"/>
+    <item
+        android:id="@+id/nav_ajustes"
+        android:title="Ajustes"/>
 </menu>
