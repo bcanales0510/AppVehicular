@@ -75,6 +75,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Configurar menú lateral
         configurarToolbar()
+        configurarMenuLateral()
 
         // Cargar información del vehículo
         cargarInformacionVehiculo()

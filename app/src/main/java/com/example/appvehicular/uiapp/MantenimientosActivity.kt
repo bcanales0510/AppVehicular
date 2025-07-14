@@ -15,6 +15,7 @@ import com.example.appvehicular.DATA.BDHelper
 import com.example.appvehicular.R
 import java.text.SimpleDateFormat
 import java.util.*
+import com.example.appvehicular.model.Mantenimiento
 
 class MantenimientosActivity : AppCompatActivity() {
     
@@ -23,8 +24,9 @@ class MantenimientosActivity : AppCompatActivity() {
     private lateinit var btnAgregarMantenimiento: Button
     private lateinit var dbHelper: BDHelper
     private lateinit var db: SQLiteDatabase
-    private lateinit var adapter: ArrayAdapter<String>
-    private val mantenimientos = mutableListOf<String>()
+    private lateinit var adapter: MantenimientoAdapter
+    private val mantenimientos = mutableListOf<Mantenimiento>()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,9 +44,10 @@ class MantenimientosActivity : AppCompatActivity() {
         db = dbHelper.writableDatabase
         
         // Configurar adapter
-        adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, mantenimientos)
+        adapter = MantenimientoAdapter(this, mantenimientos)
         listViewMantenimientos.adapter = adapter
-        
+
+
         // Configurar botón agregar
         btnAgregarMantenimiento.setOnClickListener {
             mostrarDialogoAgregarMantenimiento()
@@ -58,21 +61,22 @@ class MantenimientosActivity : AppCompatActivity() {
         // Cargar mantenimientos
         cargarMantenimientos()
     }
-    
+
     private fun cargarMantenimientos() {
         mantenimientos.clear()
-        
+
         // Mantenimientos simulados
-        mantenimientos.add("🔧 Cambio de aceite - 15/12/2024 - 50,000 km")
-        mantenimientos.add("🛞 Rotación de llantas - 10/11/2024 - 45,000 km")
-        mantenimientos.add("🔍 Revisión general - 05/10/2024 - 40,000 km")
-        mantenimientos.add("⛽ Cambio de filtro de combustible - 20/09/2024 - 35,000 km")
-        mantenimientos.add("🛢️ Cambio de filtro de aire - 15/08/2024 - 30,000 km")
-        
+        mantenimientos.add(Mantenimiento("Cambio de aceite", "15/12/2024", 50000))
+        mantenimientos.add(Mantenimiento("Rotación de llantas", "10/11/2024", 45000))
+        mantenimientos.add(Mantenimiento("Revisión general", "05/10/2024", 40000))
+        mantenimientos.add(Mantenimiento("Cambio de filtro de combustible", "20/09/2024", 35000))
+        mantenimientos.add(Mantenimiento("Cambio de filtro de aire", "15/08/2024", 30000))
+
         adapter.notifyDataSetChanged()
         txtTitulo.text = "Mantenimientos Realizados (${mantenimientos.size})"
     }
-    
+
+
     private fun mostrarDialogoAgregarMantenimiento() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_agregar_mantenimiento, null)
         val edtDescripcion = dialogView.findViewById<EditText>(R.id.edtDescripcionMantenimiento)
@@ -96,23 +100,27 @@ class MantenimientosActivity : AppCompatActivity() {
             }
             .show()
     }
-    
+
     private fun agregarMantenimiento(descripcion: String, kilometraje: Int) {
         try {
             val fecha = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
-            
-            val values = ContentValues().apply {
-                put("id_vehiculo", 1) // ID del vehículo actual
-                put("descripcion", descripcion)
-                put("fecha", fecha)
-                put("kilometraje", kilometraje)
-            }
-            
+
+            // Crear el ContentValues correctamente
+            val values = ContentValues()
+            values.put("id_vehiculo", 1) // Puedes reemplazarlo con el ID real si lo tienes
+            values.put("descripcion", descripcion)
+            values.put("fecha", fecha)
+            values.put("kilometraje", kilometraje)
+
+            // Insertar en la base de datos
             val result = db.insert("mantenimientos", null, values)
-            
+
             if (result != -1L) {
-                mantenimientos.add(0, "🔧 $descripcion - $fecha - $kilometraje km")
+                // Agregar a la lista y actualizar adaptador
+                val nuevoMantenimiento = Mantenimiento(descripcion, fecha, kilometraje)
+                mantenimientos.add(0, nuevoMantenimiento)
                 adapter.notifyDataSetChanged()
+
                 txtTitulo.text = "Mantenimientos Realizados (${mantenimientos.size})"
                 Toast.makeText(this, "Mantenimiento agregado exitosamente", Toast.LENGTH_SHORT).show()
             } else {
@@ -122,19 +130,29 @@ class MantenimientosActivity : AppCompatActivity() {
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
-    
+
+
     private fun mostrarDetalleMantenimiento(position: Int) {
-        val mantenimiento = mantenimientos[position]
+        val mantenimiento = mantenimientos[position]  // mantenimiento es un objeto de tipo Mantenimiento
+
+        val mensaje = """
+         Descripción: ${mantenimiento.descripcion}
+         Fecha: ${mantenimiento.fecha}
+         Kilometraje: ${mantenimiento.kilometraje} km
         
+        Este mantenimiento fue realizado según el programa de mantenimiento preventivo del vehículo.
+    """.trimIndent()
+
         AlertDialog.Builder(this)
             .setTitle("Detalle del Mantenimiento")
-            .setMessage("$mantenimiento\n\nEste mantenimiento fue realizado según el programa de mantenimiento preventivo del vehículo.")
+            .setMessage(mensaje)
             .setPositiveButton("Entendido") { dialog, _ ->
                 dialog.dismiss()
             }
             .show()
     }
-    
+
+
     override fun onDestroy() {
         super.onDestroy()
         db.close()
