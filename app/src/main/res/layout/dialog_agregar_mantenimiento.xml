@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#FFFFFF">
 
     <TextView
         android:layout_width="wrap_content"
@@ -20,6 +21,7 @@
         android:hint="Ej: Cambio de aceite, Rotación de llantas..."
         android:inputType="text"
         android:padding="12dp"
+        android:textColor="@color/black"
         android:background="@android:drawable/editbox_background"
         android:layout_marginBottom="16dp"/>
 
@@ -28,6 +30,7 @@
         android:layout_height="wrap_content"
         android:text="Kilometraje actual:"
         android:textSize="16sp"
+        android:textColor="@color/black"
         android:textStyle="bold"
         android:layout_marginBottom="8dp"/>
 

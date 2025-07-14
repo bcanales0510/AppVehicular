@@ -24,6 +24,8 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.navigation.NavigationView
 import kotlin.math.cos
 import kotlin.math.sin
+import android.location.Location
+
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -38,11 +40,15 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var dbHelper: BDHelper
     private lateinit var db: SQLiteDatabase
-    
+    private var idUsuario: Int = 0
+
     private var idVehiculo: Int = 0
     private var marcadorVehiculo: Marker? = null
     private var posicionActual = LatLng(-2.170998, -79.922359) // Guayaquil
     private var angulo = 0.0
+    private val centroGeocerca = LatLng(-2.170998, -79.922359) // Centro de la zona segura
+    private val radioGeocerca = 0.002 // Radio en grados (aprox. 200 metros)
+
     private val handler = Handler(Looper.getMainLooper())
     private val runnable = object : Runnable {
         override fun run() {
@@ -56,7 +62,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         setContentView(R.layout.activity_main)
 
         // Obtener ID del vehículo del intent
-        idVehiculo = intent.getIntExtra("id_vehiculo", 0)
+        idUsuario = intent.getIntExtra("id_usuario", 0)
+        idVehiculo = intent.getIntExtra("id_vehiculo", 1)
+
         
         // Inicializar base de datos
         dbHelper = BDHelper(this)
@@ -82,6 +90,18 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         
         // Iniciar simulación de movimiento
         iniciarSimulacionMovimiento()
+
+        mostrarUsuarioEnMenuLateral()
+    }
+
+    private fun estaFueraDeGeocerca(pos: LatLng): Boolean {
+        val resultado = FloatArray(1)
+        Location.distanceBetween(
+            centroGeocerca.latitude, centroGeocerca.longitude,
+            pos.latitude, pos.longitude,
+            resultado
+        )
+        return resultado[0] > (radioGeocerca * 111139) // Comparación en metros
     }
 
     private fun configurarVistas() {
@@ -104,15 +124,21 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_inicio -> startActivity(Intent(this, MainActivity::class.java))
-                R.id.nav_alertas -> startActivity(Intent(this, AlertasActivity::class.java))
-                R.id.nav_mantenimiento -> startActivity(Intent(this, MantenimientosActivity::class.java))
-                R.id.nav_historial -> startActivity(Intent(this, HistorialActivity::class.java))
+            val intent = when (menuItem.itemId) {
+                R.id.nav_inicio -> Intent(this, MainActivity::class.java)
+                R.id.nav_alertas -> Intent(this, AlertasActivity::class.java)
+                R.id.nav_mantenimiento -> Intent(this, MantenimientosActivity::class.java)
+                R.id.nav_historial -> Intent(this, HistorialActivity::class.java)
+                else -> null
             }
+
+            intent?.putExtra("id_vehiculo", idVehiculo)
+            intent?.let { startActivity(it) }
+
             drawerLayout.closeDrawers()
             true
         }
+
     }
 
     private fun setupBotonesNavegacion() {
@@ -199,7 +225,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Actualizar marcador
         marcadorVehiculo?.position = posicionActual
         marcadorVehiculo?.rotation = (angulo * 180 / Math.PI).toFloat()
-        
+
+        if (estaFueraDeGeocerca(posicionActual)) {
+            guardarAlertaGeocerca(posicionActual.latitude, posicionActual.longitude)
+        }
+
+
         // Actualizar estado
         val velocidad = (Math.random() * 60 + 20).toInt() // 20-80 km/h
         txtEstadoVehiculo.text = "Estado: En movimiento - $velocidad km/h"
@@ -207,6 +238,20 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         // Guardar ubicación en base de datos
         guardarUbicacion(posicionActual, velocidad.toDouble())
     }
+
+    private fun guardarAlertaGeocerca(lat: Double, lon: Double) {
+        val values = android.content.ContentValues().apply {
+            put("id_vehiculo", idVehiculo)
+            put("tipo", "Geocerca")
+            put("descripcion", "Vehículo fuera de la zona permitida")
+            put("fecha", java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault()).format(java.util.Date()))
+            put("latitud", lat)
+            put("longitud", lon)
+        }
+
+        db.insert("alertas", null, values)
+    }
+
 
     private fun guardarUbicacion(posicion: LatLng, velocidad: Double) {
         try {
@@ -248,6 +293,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
     }
+    private fun mostrarUsuarioEnMenuLateral() {
+        val headerView = navView.getHeaderView(0)
+        val txtUsuario = headerView.findViewById<TextView>(R.id.txtUsuario)
+
+        val cursor = db.rawQuery(
+            "SELECT usuario FROM usuarios WHERE id = ?",
+            arrayOf(idUsuario.toString())
+        )
+
+        if (cursor.moveToFirst()) {
+            val correo = cursor.getString(0)
+            txtUsuario.text = correo
+        }
+
+        cursor.close()
+    }
+
 
 
 }

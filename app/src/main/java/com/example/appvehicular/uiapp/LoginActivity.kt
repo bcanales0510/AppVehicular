@@ -47,14 +47,16 @@ class LoginActivity : AppCompatActivity() {
 
     private fun validarCredenciales(usuario: String, clave: String) {
         val cursor = db.rawQuery(
-            "SELECT id_vehiculo FROM usuarios WHERE usuario = ? AND clave = ?",
+            "SELECT id, id_vehiculo FROM usuarios WHERE usuario = ? AND clave = ?",
             arrayOf(usuario, clave)
         )
         if (cursor.moveToFirst()) {
-            val idVehiculo = cursor.getInt(0)
+            val idUsuario = cursor.getInt(0)
+            val idVehiculo = cursor.getInt(1)
             cursor.close()
             val intent = Intent(this, MainActivity::class.java)
             intent.putExtra("id_vehiculo", idVehiculo)
+            intent.putExtra("id_usuario", idUsuario)
             startActivity(intent)
             finish()
         } else {

@@ -8,10 +8,22 @@ class BDHelper (context: Context):SQLiteOpenHelper (
 ){
     companion object {
         const val DATABASE_NAME = "appvehicular.db"
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
     }
 
     override fun onCreate(db: SQLiteDatabase) {
+        db.execSQL("""
+        CREATE TABLE IF NOT EXISTS alertas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_vehiculo INTEGER,
+            tipo TEXT,
+            descripcion TEXT,
+            fecha TEXT,
+            latitud REAL,
+            longitud REAL
+        )
+    """.trimIndent())
+
         db.execSQL(
             """
         CREATE TABLE vehiculos (
@@ -64,11 +76,20 @@ class BDHelper (context: Context):SQLiteOpenHelper (
         )
     }
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS usuarios")
-        db.execSQL("DROP TABLE IF EXISTS ubicaciones")
-        db.execSQL("DROP TABLE IF EXISTS mantenimientos")
-        db.execSQL("DROP TABLE IF EXISTS vehiculos ")
-        onCreate(db)
+        if (oldVersion < 2) {
+            db.execSQL("""
+            CREATE TABLE IF NOT EXISTS alertas (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_vehiculo INTEGER,
+                tipo TEXT,
+                descripcion TEXT,
+                fecha TEXT,
+                latitud REAL,
+                longitud REAL
+            );
+        """.trimIndent())
+        }
     }
+
 
 }

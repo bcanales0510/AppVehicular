@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F2F2F2"
+    android:background="@color/my_secondary"
     android:padding="16dp">
 
     <!-- Título -->
@@ -14,7 +14,7 @@
         android:text="Rastreo Vehicular"
         android:textSize="26sp"
         android:textStyle="bold"
-        android:textColor="@color/my_primary"
+        android:textColor="#FFFFFF"
         android:layout_centerHorizontal="true"
 
         android:layout_marginTop="24dp"
@@ -33,13 +33,15 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         app:cardCornerRadius="20dp"
-        app:cardElevation="8dp">
+        app:cardElevation="8dp"
+        android:background="#FFFFFF">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:padding="24dp"
+            >
 
             <!-- Usuario -->
             <EditText

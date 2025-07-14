@@ -34,10 +34,14 @@
         </activity>
         
         <activity android:name=".uiapp.RegisterActivity" />
-        <activity android:name=".uiapp.MainActivity" />
-        <activity android:name=".uiapp.AlertasActivity" />
-        <activity android:name=".uiapp.MantenimientosActivity" />
-        <activity android:name=".uiapp.HistorialActivity" />
+        <activity android:name=".uiapp.MainActivity"/>
+        <activity
+            android:name=".uiapp.AlertasActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".uiapp.MantenimientosActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
+        <activity android:name=".uiapp.HistorialActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
     </application>
 
 </manifest>
