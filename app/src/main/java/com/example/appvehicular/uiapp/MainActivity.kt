@@ -47,6 +47,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var dbHelper: BDHelper
     private lateinit var db: SQLiteDatabase
     private var idUsuario: Int = 0
+    private var regresoDeAjustes = false
 
     private var idVehiculo: Int = 0
     private var marcadorVehiculo: Marker? = null
@@ -87,6 +88,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
 
 
+        verificarGPSActivado()
         configurarVistas()
 
         // Configurar menú lateral
@@ -95,9 +97,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Cargar información del vehículo
         cargarInformacionVehiculo()
-        
-        // Iniciar simulación de movimiento
-        iniciarSimulacionMovimiento()
+
 
         mostrarUsuarioEnMenuLateral()
     }
@@ -124,6 +124,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         val fusedLocationClient: FusedLocationProviderClient =
             LocationServices.getFusedLocationProviderClient(this)
 
+        val locationManager = getSystemService(LOCATION_SERVICE) as android.location.LocationManager
+        val gpsActivo = locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)
+
+        if (!gpsActivo) {
+            Toast.makeText(this, "El GPS está desactivado. Actívalo para iniciar la simulación.", Toast.LENGTH_LONG).show()
+            return  // NO iniciar simulación
+        }
+
         if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
             fusedLocationClient.lastLocation
                 .addOnSuccessListener { location: android.location.Location? ->
@@ -131,19 +139,35 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                         posicionActual = LatLng(location.latitude, location.longitude)
                         map.moveCamera(CameraUpdateFactory.newLatLngZoom(posicionActual, 15f))
                         marcadorVehiculo?.position = posicionActual
+                        iniciarSimulacionMovimiento()  // Solo se inicia si hay ubicación
+                    } else {
+                        Toast.makeText(this, "No se pudo obtener la ubicación actual.", Toast.LENGTH_SHORT).show()
                     }
-                    iniciarSimulacionMovimiento()
                 }
                 .addOnFailureListener {
-                    Toast.makeText(this, "No se pudo obtener ubicación", Toast.LENGTH_SHORT).show()
-                    iniciarSimulacionMovimiento()
+                    Toast.makeText(this, "Error al obtener ubicación.", Toast.LENGTH_SHORT).show()
                 }
         } else {
-            // Si no tenemos permiso, usamos simulación
-            iniciarSimulacionMovimiento()
+            Toast.makeText(this, "Permiso de ubicación no concedido.", Toast.LENGTH_SHORT).show()
         }
     }
 
+
+    private fun verificarGPSActivado() {
+        val locationManager = getSystemService(LOCATION_SERVICE) as android.location.LocationManager
+        val gpsActivo = locationManager.isProviderEnabled(android.location.LocationManager.GPS_PROVIDER)
+
+        if (!gpsActivo) {
+            val builder = android.app.AlertDialog.Builder(this)
+            builder.setTitle("GPS no activado")
+            builder.setMessage("Por favor, activa la ubicación para usar la aplicación correctamente.")
+            builder.setPositiveButton("Activar") { _, _ ->
+                startActivity(Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            builder.setNegativeButton("Cancelar", null)
+            builder.show()
+        }
+    }
 
 
 
