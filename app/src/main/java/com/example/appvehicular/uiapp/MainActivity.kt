@@ -24,8 +24,14 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.navigation.NavigationView
 import kotlin.math.cos
 import kotlin.math.sin
-import android.location.Location
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.FusedLocationProviderClient
 
+import android.location.Location
+import android.widget.Toast
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
@@ -48,6 +54,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var angulo = 0.0
     private val centroGeocerca = LatLng(-2.170998, -79.922359) // Centro de la zona segura
     private val radioGeocerca = 0.002 // Radio en grados (aprox. 200 metros)
+    private val REQUEST_LOCATION_PERMISSION = 1
+
 
     private val handler = Handler(Looper.getMainLooper())
     private val runnable = object : Runnable {
@@ -93,6 +101,51 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         mostrarUsuarioEnMenuLateral()
     }
+
+    private fun solicitarPermisosUbicacion() {
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), REQUEST_LOCATION_PERMISSION)
+        } else {
+            obtenerUbicacionInicial()
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == REQUEST_LOCATION_PERMISSION && grantResults.isNotEmpty() && grantResults[0] == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            obtenerUbicacionInicial()
+        } else {
+            Toast.makeText(this, "Permiso de ubicación denegado", Toast.LENGTH_SHORT).show()
+            iniciarSimulacionMovimiento() // usa Guayaquil como fallback
+        }
+    }
+
+    private fun obtenerUbicacionInicial() {
+        val fusedLocationClient: FusedLocationProviderClient =
+            LocationServices.getFusedLocationProviderClient(this)
+
+        if (checkSelfPermission(android.Manifest.permission.ACCESS_FINE_LOCATION) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: android.location.Location? ->
+                    if (location != null) {
+                        posicionActual = LatLng(location.latitude, location.longitude)
+                        map.moveCamera(CameraUpdateFactory.newLatLngZoom(posicionActual, 15f))
+                        marcadorVehiculo?.position = posicionActual
+                    }
+                    iniciarSimulacionMovimiento()
+                }
+                .addOnFailureListener {
+                    Toast.makeText(this, "No se pudo obtener ubicación", Toast.LENGTH_SHORT).show()
+                    iniciarSimulacionMovimiento()
+                }
+        } else {
+            // Si no tenemos permiso, usamos simulación
+            iniciarSimulacionMovimiento()
+        }
+    }
+
+
+
 
     private fun estaFueraDeGeocerca(pos: LatLng): Boolean {
         val resultado = FloatArray(1)
@@ -194,7 +247,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(posicionActual, 15f))
         
         // Agregar marcador del vehículo
-        agregarMarcadorVehiculo()
+
+        agregarMarcadorVehiculo() // se moverá luego
+        solicitarPermisosUbicacion()
     }
 
     private fun agregarMarcadorVehiculo() {
